@@ -34,7 +34,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         brightness: Brightness.light,
         textTheme: GoogleFonts.poppinsTextTheme(),
-        primaryColor: const Color(0xFFFFB300), // Amber
+        primaryColor: const Color(0xFFFFB300),
         scaffoldBackgroundColor: Colors.yellow.shade50,
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
@@ -49,7 +49,7 @@ class MyApp extends StatelessWidget {
       darkTheme: ThemeData(
         brightness: Brightness.dark,
         textTheme: GoogleFonts.poppinsTextTheme(ThemeData.dark().textTheme),
-        primaryColor: const Color(0xFFFF8F00), // Dark Amber
+        primaryColor: const Color(0xFFFF8F00),
         scaffoldBackgroundColor: Colors.black,
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
@@ -64,10 +64,24 @@ class MyApp extends StatelessWidget {
       initialRoute: '/getStarted',
       routes: {
         '/getStarted': (context) => const GetStartedPage(),
-        '/login': (context) => const LoginPage(),
-        '/signup': (context) => const SignUpPage(),
-        '/home': (context) => const HomePage(),
+        '/login': (context) => LoginPage(), // remove const if passing arguments
+        '/signup': (context) => SignUpPage(),
+        // remove '/home' from routes because HomePage needs userId
       },
+      // Optional: handle redirect after login/signup here using onGenerateRoute
+    );
+  }
+}
+
+// Example: Redirect to HomePage after login/signup
+void navigateToHome(BuildContext context) {
+  final user = FirebaseAuth.instance.currentUser;
+  if (user != null) {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (_) => HomePage(userId: user.uid),
+      ),
     );
   }
 }

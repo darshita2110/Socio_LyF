@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-import 'package:firebase_auth/firebase_auth.dart'; // ✅ added
+import 'package:firebase_auth/firebase_auth.dart';
 import '../theme_provider.dart';
+import 'home_page.dart'; // import HomePage
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
@@ -14,27 +15,120 @@ class SignUpPage extends StatefulWidget {
 class _SignUpPageState extends State<SignUpPage> {
   bool _obscurePassword = true;
 
-  // ✅ controllers for input
   final nameController = TextEditingController();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
 
-  // ✅ signup function
+  // Firebase signup
   Future<void> signUp() async {
+    if (nameController.text.trim().isEmpty) {
+      showCustomDialog("Please enter your full name", isError: true);
+      return;
+    }
+
     try {
+      UserCredential userCredential =
       await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: emailController.text.trim(),
         password: passwordController.text.trim(),
       );
 
-      // ✅ success → go to home
-      Navigator.pushReplacementNamed(context, '/home');
-    } catch (e) {
-      // ✅ failure → show snackbar
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Sign Up failed: $e")),
-      );
+      if (userCredential.user != null) {
+        // ✅ Redirect to HomePage with userId
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (_) => HomePage(userId: userCredential.user!.uid),
+          ),
+        );
+      }
+    } on FirebaseAuthException catch (e) {
+      String message = '';
+      if (e.code == 'email-already-in-use') {
+        message = 'This email is already in use.';
+      } else if (e.code == 'invalid-email') {
+        message = 'Invalid email format.';
+      } else if (e.code == 'weak-password') {
+        message = 'Password is too weak.';
+      } else {
+        message = 'Sign Up failed: ${e.message}';
+      }
+      showCustomDialog(message, isError: true);
     }
+  }
+
+  // Custom popup dialog
+  void showCustomDialog(String message,
+      {required bool isError, VoidCallback? onOk}) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    showGeneralDialog(
+      context: context,
+      barrierDismissible: true,
+      barrierLabel: "Popup",
+      pageBuilder: (_, __, ___) => Center(
+        child: Material(
+          color: Colors.transparent,
+          child: Container(
+            padding: const EdgeInsets.all(20),
+            margin: const EdgeInsets.symmetric(horizontal: 30),
+            decoration: BoxDecoration(
+              color: isDark ? Colors.grey[900] : Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.3),
+                  blurRadius: 10,
+                  offset: const Offset(0, 5),
+                ),
+              ],
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  isError ? Icons.error_outline : Icons.check_circle_outline,
+                  color: isError ? Colors.red : Colors.green,
+                  size: 50,
+                ),
+                const SizedBox(height: 15),
+                Text(
+                  message,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: isDark ? Colors.white : Colors.black,
+                    fontSize: 16,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: isError
+                        ? Colors.red
+                        : Theme.of(context).primaryColor,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  onPressed: () {
+                    Navigator.pop(context);
+                    if (onOk != null) onOk();
+                  },
+                  child: const Text("OK"),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+      transitionDuration: const Duration(milliseconds: 250),
+      transitionBuilder: (_, anim, __, child) {
+        return FadeTransition(
+          opacity: anim,
+          child: ScaleTransition(scale: anim, child: child),
+        );
+      },
+    );
   }
 
   @override
@@ -81,8 +175,6 @@ class _SignUpPageState extends State<SignUpPage> {
                   ),
                 ),
                 const SizedBox(height: 30),
-
-                // Card
                 Container(
                   margin: const EdgeInsets.symmetric(horizontal: 24),
                   padding: const EdgeInsets.all(20),
@@ -95,7 +187,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   child: Column(
                     children: [
                       TextField(
-                        controller: nameController, // ✅ added
+                        controller: nameController,
                         decoration: InputDecoration(
                           hintText: "Full Name",
                           prefixIcon: Icon(Icons.person,
@@ -106,7 +198,7 @@ class _SignUpPageState extends State<SignUpPage> {
                       ),
                       const SizedBox(height: 16),
                       TextField(
-                        controller: emailController, // ✅ added
+                        controller: emailController,
                         decoration: InputDecoration(
                           hintText: "Email",
                           prefixIcon: Icon(Icons.email,
@@ -116,10 +208,8 @@ class _SignUpPageState extends State<SignUpPage> {
                         ),
                       ),
                       const SizedBox(height: 16),
-
-                      // Password with eye
                       TextField(
-                        controller: passwordController, // ✅ added
+                        controller: passwordController,
                         obscureText: _obscurePassword,
                         decoration: InputDecoration(
                           hintText: "Password",
@@ -139,20 +229,17 @@ class _SignUpPageState extends State<SignUpPage> {
                             },
                           ),
                           border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(16),
-                          ),
+                              borderRadius: BorderRadius.circular(16)),
                         ),
                       ),
-
                       const SizedBox(height: 20),
                       ElevatedButton(
-                        onPressed: signUp, // ✅ now runs Firebase signup
+                        onPressed: signUp,
                         child: const Text("SIGN UP"),
                       ),
                     ],
                   ),
                 ),
-
                 const SizedBox(height: 20),
                 TextButton(
                   onPressed: () {
