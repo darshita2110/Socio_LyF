@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "68900275639",
+    "project_id": "sociolyf-17854",
+    "storage_bucket": "sociolyf-17854.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:68900275639:android:48da8a80c3f6e260d89432",
+        "android_client_info": {
+          "package_name": "com.example.socio_lyf"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAME0vPFs88souI7ATZ_uY69CwJHGfSNK0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

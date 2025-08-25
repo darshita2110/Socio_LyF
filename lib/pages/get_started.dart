@@ -1,17 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import '../theme_provider.dart';
 
 class GetStartedPage extends StatelessWidget {
   const GetStartedPage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final themeProvider = Provider.of<ThemeProvider>(context);
+
     return Scaffold(
+      appBar: AppBar(
+        title: const Text("SocioLyF"),
+        actions: [
+          IconButton(
+            icon: Icon(isDark ? Icons.light_mode : Icons.dark_mode),
+            onPressed: () => themeProvider.toggleTheme(),
+          )
+        ],
+      ),
       body: Container(
         width: double.infinity,
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [Color(0xFF004D40), Color(0xFF26A69A)],
+            colors: isDark
+                ? [Colors.amber.shade900, Colors.brown.shade800]
+                : [Colors.amber.shade200, Colors.orange.shade300],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
@@ -19,34 +35,23 @@ class GetStartedPage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.people_alt_outlined,
-                size: 120, color: Colors.white),
+            Image.asset("assets/images/coder.png", height: 160),
             const SizedBox(height: 20),
             Text(
               "Welcome to SocioLyF",
               style: GoogleFonts.poppins(
                 fontSize: 28,
                 fontWeight: FontWeight.bold,
-                color: Colors.white,
+                color: isDark ? Colors.white : Colors.black,
               ),
             ),
             const SizedBox(height: 40),
             ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.white,
-                foregroundColor: const Color(0xFF26A69A),
-                padding:
-                const EdgeInsets.symmetric(horizontal: 60, vertical: 16),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(24),
-                ),
-              ),
               onPressed: () {
                 Navigator.pushNamed(context, '/signup');
               },
-              child: Text("Get Started",
-                  style: GoogleFonts.poppins(
-                      fontSize: 18, fontWeight: FontWeight.bold)),
+              child: const Text("Get Started",
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             ),
           ],
         ),
