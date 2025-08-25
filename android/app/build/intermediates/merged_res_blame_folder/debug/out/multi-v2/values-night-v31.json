@@ -1,0 +1,28 @@
+{
+    "logs": [
+        {
+            "outputFile": "com.example.socio_lyf.app-mergeDebugResources-24:/values-night-v31/values-night-v31.xml",
+            "map": [
+                {
+                    "source": "C:\\Users\\Lenovo\\Desktop\\all folders\\SocioLyF\\android\\app\\src\\main\\res\\values-night-v31\\styles.xml",
+                    "from": {
+                        "startLines": "3,18",
+                        "startColumns": "4,4",
+                        "startOffsets": "172,1128",
+                        "endLines": "11,20",
+                        "endColumns": "12,12",
+                        "endOffsets": "777,1292"
+                    },
+                    "to": {
+                        "startLines": "2,11",
+                        "startColumns": "4,4",
+                        "startOffsets": "55,665",
+                        "endLines": "10,13",
+                        "endColumns": "12,12",
+                        "endOffsets": "660,829"
+                    }
+                }
+            ]
+        }
+    ]
+}
